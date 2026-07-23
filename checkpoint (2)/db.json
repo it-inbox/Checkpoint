@@ -1,0 +1,491 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "employeeId": "EMP-001",
+      "name": "Sarah Connor",
+      "email": "sarah.connor@checkpoint.io",
+      "phone": "+1 (555) 019-2834",
+      "role": "admin",
+      "status": "active",
+      "designation": "HR Director",
+      "department": "Human Resources",
+      "joinedDate": "2024-01-15",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
+    },
+    {
+      "id": "u2",
+      "employeeId": "EMP-002",
+      "name": "John Miller",
+      "email": "john.miller@checkpoint.io",
+      "phone": "+1 (555) 014-9982",
+      "role": "employee",
+      "status": "active",
+      "designation": "Senior Software Engineer",
+      "department": "Engineering",
+      "joinedDate": "2024-03-10",
+      "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150"
+    },
+    {
+      "id": "u3",
+      "employeeId": "EMP-003",
+      "name": "Emily Davis",
+      "email": "emily.davis@checkpoint.io",
+      "phone": "+1 (555) 012-4431",
+      "role": "employee",
+      "status": "active",
+      "designation": "Product Designer",
+      "department": "Product",
+      "joinedDate": "2024-06-01",
+      "avatarUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150"
+    },
+    {
+      "id": "u4",
+      "employeeId": "EMP-004",
+      "name": "David Chen",
+      "email": "david.chen@checkpoint.io",
+      "phone": "+1 (555) 017-3390",
+      "role": "employee",
+      "status": "active",
+      "designation": "Marketing Lead",
+      "department": "Marketing",
+      "joinedDate": "2024-05-18",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+    },
+    {
+      "id": "u5",
+      "employeeId": "EMP-005",
+      "name": "Marcus Vance",
+      "email": "marcus.vance@checkpoint.io",
+      "phone": "+1 (555) 011-8822",
+      "role": "employee",
+      "status": "inactive",
+      "designation": "Sales Executive",
+      "department": "Sales",
+      "joinedDate": "2024-02-20",
+      "avatarUrl": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150"
+    }
+  ],
+  "settings": {
+    "companyName": "CheckPoint Technologies Inc.",
+    "officeName": "HQ Silicon Valley",
+    "latitude": 37.774929,
+    "longitude": -122.419416,
+    "radius": 100,
+    "officeStartTime": "09:00",
+    "officeEndTime": "18:00"
+  },
+  "attendance": [
+    {
+      "id": "att_u2_2026-07-02",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-02",
+      "checkIn": "08:06:00",
+      "checkOut": "17:01:00",
+      "status": "present",
+      "workingHours": 8.92
+    },
+    {
+      "id": "att_u3_2026-07-02",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-02",
+      "checkIn": "09:42:00",
+      "checkOut": "18:53:00",
+      "status": "late",
+      "workingHours": 9.18
+    },
+    {
+      "id": "att_u4_2026-07-02",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-02",
+      "checkIn": "08:14:00",
+      "checkOut": "18:01:00",
+      "status": "present",
+      "workingHours": 9.78
+    },
+    {
+      "id": "att_u5_2026-07-02",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-02",
+      "checkIn": "08:11:00",
+      "checkOut": "17:32:00",
+      "status": "present",
+      "workingHours": 9.35
+    },
+    {
+      "id": "att_u2_2026-07-03",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-03",
+      "checkIn": "08:25:00",
+      "checkOut": "17:37:00",
+      "status": "present",
+      "workingHours": 9.2
+    },
+    {
+      "id": "att_u3_2026-07-03",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-03",
+      "checkIn": "08:50:00",
+      "checkOut": "18:44:00",
+      "status": "present",
+      "workingHours": 9.9
+    },
+    {
+      "id": "att_u4_2026-07-03",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-03",
+      "checkIn": "08:27:00",
+      "checkOut": "17:48:00",
+      "status": "present",
+      "workingHours": 9.35
+    },
+    {
+      "id": "att_u5_2026-07-03",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-03",
+      "checkIn": null,
+      "checkOut": null,
+      "status": "absent",
+      "workingHours": 0
+    },
+    {
+      "id": "att_u2_2026-07-06",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-06",
+      "checkIn": "08:42:00",
+      "checkOut": "17:27:00",
+      "status": "present",
+      "workingHours": 8.75
+    },
+    {
+      "id": "att_u3_2026-07-06",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-06",
+      "checkIn": "09:42:00",
+      "checkOut": "18:11:00",
+      "status": "late",
+      "workingHours": 8.48
+    },
+    {
+      "id": "att_u4_2026-07-06",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-06",
+      "checkIn": "08:32:00",
+      "checkOut": "18:33:00",
+      "status": "present",
+      "workingHours": 10.02
+    },
+    {
+      "id": "att_u5_2026-07-06",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-06",
+      "checkIn": "09:41:00",
+      "checkOut": "17:02:00",
+      "status": "late",
+      "workingHours": 7.35
+    },
+    {
+      "id": "att_u2_2026-07-07",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-07",
+      "checkIn": "09:25:00",
+      "checkOut": "17:29:00",
+      "status": "late",
+      "workingHours": 8.07
+    },
+    {
+      "id": "att_u3_2026-07-07",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-07",
+      "checkIn": "08:58:00",
+      "checkOut": "18:20:00",
+      "status": "present",
+      "workingHours": 9.37
+    },
+    {
+      "id": "att_u4_2026-07-07",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-07",
+      "checkIn": null,
+      "checkOut": null,
+      "status": "absent",
+      "workingHours": 0
+    },
+    {
+      "id": "att_u5_2026-07-07",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-07",
+      "checkIn": "08:24:00",
+      "checkOut": "17:25:00",
+      "status": "present",
+      "workingHours": 9.02
+    },
+    {
+      "id": "att_u2_2026-07-08",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-08",
+      "checkIn": "08:49:00",
+      "checkOut": null,
+      "status": "auto_closed",
+      "workingHours": 8
+    },
+    {
+      "id": "att_u3_2026-07-08",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-08",
+      "checkIn": "08:08:00",
+      "checkOut": "17:19:00",
+      "status": "present",
+      "workingHours": 9.18
+    },
+    {
+      "id": "att_u4_2026-07-08",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-08",
+      "checkIn": "08:31:00",
+      "checkOut": "17:44:00",
+      "status": "present",
+      "workingHours": 9.22
+    },
+    {
+      "id": "att_u5_2026-07-08",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-08",
+      "checkIn": "08:57:00",
+      "checkOut": null,
+      "status": "auto_closed",
+      "workingHours": 8
+    },
+    {
+      "id": "att_u2_2026-07-09",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-09",
+      "checkIn": "08:26:00",
+      "checkOut": "17:49:00",
+      "status": "present",
+      "workingHours": 9.38
+    },
+    {
+      "id": "att_u3_2026-07-09",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-09",
+      "checkIn": "08:48:00",
+      "checkOut": "18:26:00",
+      "status": "present",
+      "workingHours": 9.63
+    },
+    {
+      "id": "att_u4_2026-07-09",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-09",
+      "checkIn": null,
+      "checkOut": null,
+      "status": "absent",
+      "workingHours": 0
+    },
+    {
+      "id": "att_u5_2026-07-09",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-09",
+      "checkIn": "08:26:00",
+      "checkOut": "18:50:00",
+      "status": "present",
+      "workingHours": 10.4
+    },
+    {
+      "id": "att_u2_2026-07-10",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-10",
+      "checkIn": "08:27:00",
+      "checkOut": "17:23:00",
+      "status": "present",
+      "workingHours": 8.93
+    },
+    {
+      "id": "att_u3_2026-07-10",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-10",
+      "checkIn": "09:13:00",
+      "checkOut": "17:08:00",
+      "status": "late",
+      "workingHours": 7.92
+    },
+    {
+      "id": "att_u4_2026-07-10",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-10",
+      "checkIn": null,
+      "checkOut": null,
+      "status": "absent",
+      "workingHours": 0
+    },
+    {
+      "id": "att_u5_2026-07-10",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-10",
+      "checkIn": "08:12:00",
+      "checkOut": "18:01:00",
+      "status": "present",
+      "workingHours": 9.82
+    },
+    {
+      "id": "att_u2_2026-07-13",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-13",
+      "checkIn": "08:38:00",
+      "checkOut": "17:24:00",
+      "status": "present",
+      "workingHours": 8.77
+    },
+    {
+      "id": "att_u3_2026-07-13",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-13",
+      "checkIn": null,
+      "checkOut": null,
+      "status": "absent",
+      "workingHours": 0
+    },
+    {
+      "id": "att_u4_2026-07-13",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-13",
+      "checkIn": "08:56:00",
+      "checkOut": "18:40:00",
+      "status": "present",
+      "workingHours": 9.73
+    },
+    {
+      "id": "att_u5_2026-07-13",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-13",
+      "checkIn": "09:50:00",
+      "checkOut": "18:03:00",
+      "status": "late",
+      "workingHours": 8.22
+    },
+    {
+      "id": "att_u2_2026-07-14",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-14",
+      "checkIn": "08:21:00",
+      "checkOut": "18:42:00",
+      "status": "present",
+      "workingHours": 10.35
+    },
+    {
+      "id": "att_u3_2026-07-14",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-14",
+      "checkIn": null,
+      "checkOut": null,
+      "status": "absent",
+      "workingHours": 0
+    },
+    {
+      "id": "att_u4_2026-07-14",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-14",
+      "checkIn": "08:15:00",
+      "checkOut": "17:20:00",
+      "status": "present",
+      "workingHours": 9.08
+    },
+    {
+      "id": "att_u5_2026-07-14",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-14",
+      "checkIn": null,
+      "checkOut": null,
+      "status": "absent",
+      "workingHours": 0
+    },
+    {
+      "id": "att_u2_2026-07-15",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-15",
+      "checkIn": "09:58:00",
+      "checkOut": "18:02:00",
+      "status": "late",
+      "workingHours": 8.07
+    },
+    {
+      "id": "att_u3_2026-07-15",
+      "employeeId": "EMP-003",
+      "employeeName": "Emily Davis",
+      "date": "2026-07-15",
+      "checkIn": "08:41:00",
+      "checkOut": "18:13:00",
+      "status": "present",
+      "workingHours": 9.53
+    },
+    {
+      "id": "att_u4_2026-07-15",
+      "employeeId": "EMP-004",
+      "employeeName": "David Chen",
+      "date": "2026-07-15",
+      "checkIn": "08:49:00",
+      "checkOut": "17:36:00",
+      "status": "present",
+      "workingHours": 8.78
+    },
+    {
+      "id": "att_u5_2026-07-15",
+      "employeeId": "EMP-005",
+      "employeeName": "Marcus Vance",
+      "date": "2026-07-15",
+      "checkIn": "08:56:00",
+      "checkOut": "17:19:00",
+      "status": "present",
+      "workingHours": 8.38
+    },
+    {
+      "id": "att_EMP-002_2026-07-17",
+      "employeeId": "EMP-002",
+      "employeeName": "John Miller",
+      "date": "2026-07-17",
+      "checkIn": "14:23:02",
+      "checkOut": null,
+      "status": "late",
+      "workingHours": 0,
+      "notes": "[Face Verified: 98.91% Similarity at 0° Angle] Checked in within geofence range"
+    }
+  ]
+}

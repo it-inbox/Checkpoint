@@ -1,6 +1,0 @@
-{
-  "name": "CheckPoint",
-  "description": "A modern enterprise-grade Attendance Management System with comprehensive tracking, employee management, and report insights.",
-  "requestFramePermissions": ["camera", "geolocation"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

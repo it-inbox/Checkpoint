@@ -5,6 +5,7 @@ import multer from 'multer';
 import dayjs from 'dayjs';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { z } from 'zod';
 
 dotenv.config();
 
@@ -84,6 +85,44 @@ interface DB {
   settings: OrganizationSettings;
   attendance: AttendanceRecord[];
 }
+
+// Zod Schemas
+const UserSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email format'),
+  phone: z.string().min(1, 'Phone is required'),
+  role: z.enum(['admin', 'employee']),
+  status: z.enum(['active', 'inactive']).default('active'),
+  designation: z.string().min(1, 'Designation is required'),
+  department: z.string().min(1, 'Department is required'),
+});
+
+const SettingsSchema = z.object({
+  companyName: z.string().min(1, 'Company name is required'),
+  officeName: z.string().min(1, 'Office name is required'),
+  latitude: z.number().min(-90).max(90, 'Latitude must be between -90 and 90'),
+  longitude: z.number().min(-180).max(180, 'Longitude must be between -180 and 180'),
+  radius: z.number().positive('Radius must be positive'),
+  officeStartTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format (HH:mm)'),
+  officeEndTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format (HH:mm)'),
+});
+
+const LoginSchema = z.object({
+  email: z.string().email('Invalid email format'),
+});
+
+const CheckInSchema = z.object({
+  employeeId: z.string().min(1, 'Employee ID is required'),
+  employeeName: z.string().min(1, 'Employee name is required'),
+  latitude: z.string().optional().transform(val => val ? parseFloat(val) : undefined),
+  longitude: z.string().optional().transform(val => val ? parseFloat(val) : undefined),
+  accuracy: z.string().optional().transform(val => val ? parseFloat(val) : undefined),
+  angle: z.string().optional().transform(val => val ? parseFloat(val) : undefined),
+});
+
+const CheckOutSchema = z.object({
+  employeeId: z.string().min(1, 'Employee ID is required'),
+});
 
 // Initial Database State
 const INITIAL_USERS: User[] = [
@@ -436,10 +475,11 @@ app.get('/api/db-status', (req, res) => {
 
 // Auth Endpoints
 app.post('/api/auth/login', async (req, res) => {
-  const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ error: 'Email is required' });
+  const result = LoginSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.issues[0].message });
   }
+  const { email } = result.data;
 
   const normalizedEmail = email.trim().toLowerCase();
   let user: any = null;
@@ -505,7 +545,12 @@ app.get('/api/users/:id', async (req, res) => {
 });
 
 app.post('/api/users', upload.single('avatar'), async (req, res) => {
-  const employeeData = req.body;
+  const result = UserSchema.safeParse(req.body);
+  if (!result.success) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: result.error.issues[0].message });
+  }
+  const employeeData = result.data;
   const file = req.file;
 
   if (!file) {
@@ -567,7 +612,12 @@ app.post('/api/users', upload.single('avatar'), async (req, res) => {
 
 app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
   const { id } = req.params;
-  const employeeData = req.body;
+  const result = UserSchema.partial().safeParse(req.body);
+  if (!result.success) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: result.error.issues[0].message });
+  }
+  const employeeData = result.data;
   const file = req.file;
 
   if (isMongoConnected) {
@@ -612,7 +662,7 @@ app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
   }
 
   if (employeeData.email) {
-    const emailConflict = db.users.some(u => u.id !== id && u.email.toLowerCase() === employeeData.email.toLowerCase());
+    const emailConflict = db.users.some(u => u.id !== id && u.email.toLowerCase() === employeeData.email!.toLowerCase());
     if (emailConflict) {
       if (file && fs.existsSync(file.path)) fs.unlinkSync(file.path);
       return res.status(400).json({ error: 'An employee with this email already exists.' });
@@ -687,13 +737,19 @@ app.get('/api/settings', async (req, res) => {
 });
 
 app.post('/api/settings', async (req, res) => {
+  const result = SettingsSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.issues[0].message });
+  }
+  const settingsData = result.data;
+
   if (isMongoConnected) {
     try {
       let settings = await MongoSettings.findOne({});
       if (!settings) {
-        settings = new MongoSettings(req.body);
+        settings = new MongoSettings(settingsData);
       } else {
-        Object.assign(settings, req.body);
+        Object.assign(settings, settingsData);
       }
       await settings.save();
       return res.json(settings);
@@ -704,7 +760,7 @@ app.post('/api/settings', async (req, res) => {
   const db = getDb();
   db.settings = {
     ...db.settings,
-    ...req.body,
+    ...settingsData,
   };
   saveDb(db);
   res.json(db.settings);
@@ -909,7 +965,14 @@ app.get('/api/attendance/admin/metrics', async (req, res) => {
 });
 
 app.post('/api/attendance/check-in', upload.array('selfies'), async (req, res) => {
-  const { employeeId, employeeName, latitude, longitude, accuracy, angle } = req.body;
+  const result = CheckInSchema.safeParse(req.body);
+  if (!result.success) {
+    if (req.files && Array.isArray(req.files)) {
+      req.files.forEach(f => { if (fs.existsSync(f.path)) fs.unlinkSync(f.path); });
+    }
+    return res.status(400).json({ error: result.error.issues[0].message });
+  }
+  const { employeeId, employeeName, latitude, longitude, accuracy, angle } = result.data;
   const files = req.files as Express.Multer.File[];
 
   const cleanupFiles = () => {
@@ -926,10 +989,6 @@ app.post('/api/attendance/check-in', upload.array('selfies'), async (req, res) =
     }
   };
 
-  if (!employeeId || !employeeName) {
-    cleanupFiles();
-    return res.status(400).json({ error: 'Employee credentials are required.' });
-  }
 
   if (!files || files.length === 0) {
     return res.status(400).json({ error: 'Attendance selfie image is mandatory for face verification.' });
@@ -1111,8 +1170,8 @@ app.post('/api/attendance/check-in', upload.array('selfies'), async (req, res) =
   let notes = `[Face Verified: ${similarityConfidence}% Similarity at ${targetAngle}° Angle] `;
   if (latitude && longitude) {
     const distance = calculateDistance(
-      parseFloat(latitude),
-      parseFloat(longitude),
+      latitude,
+      longitude,
       settings.latitude,
       settings.longitude
     );
@@ -1156,10 +1215,11 @@ app.post('/api/attendance/check-in', upload.array('selfies'), async (req, res) =
 });
 
 app.post('/api/attendance/check-out', async (req, res) => {
-  const { employeeId } = req.body;
-  if (!employeeId) {
-    return res.status(400).json({ error: 'Employee ID is required.' });
+  const result = CheckOutSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.issues[0].message });
   }
+  const { employeeId } = result.data;
 
   const todayStr = dayjs().format('YYYY-MM-DD');
   const timeStr = dayjs().format('HH:mm:ss');
@@ -1223,6 +1283,9 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   console.error('[Unhandled Error]', err);
   res.status(500).json({ error: 'Internal server error' });
 });
+
+// Healt check
+app.get('/', (req, res) => res.json({message: "API is running..."}))
 
 // Pure API server now — no Vite, no static client serving.
 // Deploy client/ separately (its own host, or reverse-proxy /api to here).

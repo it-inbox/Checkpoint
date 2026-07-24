@@ -6,6 +6,8 @@ import dayjs from 'dayjs';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './swagger';
 
 dotenv.config();
 
@@ -454,11 +456,49 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Serve the OpenAPI spec as JSON
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
 // ==========================================
 // API ENDPOINTS
 // ==========================================
 
 // Diagnostic Database Status
+
+/**
+ * @swagger
+ * /api/db-status:
+ *   get:
+ *     summary: Get database connection status
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Database status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isMongoConnected:
+ *                   type: boolean
+ *                 connectionError:
+ *                   type: string
+ *                   nullable: true
+ *                 databaseName:
+ *                   type: string
+ *                   nullable: true
+ *                 uriConfigured:
+ *                   type: boolean
+ *                 uriMasked:
+ *                   type: string
+ *                   nullable: true
+ */
 app.get('/api/db-status', (req, res) => {
   const uriMasked = MONGODB_URI
     ? MONGODB_URI.replace(/:([^@:]+)@/, ':******@')
@@ -474,6 +514,45 @@ app.get('/api/db-status', (req, res) => {
 });
 
 // Auth Endpoints
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: User login
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       400:
+ *         description: Email is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Account deactivated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.post('/api/auth/login', async (req, res) => {
   const result = LoginSchema.safeParse(req.body);
   if (!result.success) {
@@ -512,6 +591,25 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // Users/Employee CRUD
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ */
 app.get('/api/users', async (req, res) => {
   if (isMongoConnected) {
     try {
@@ -525,6 +623,35 @@ app.get('/api/users', async (req, res) => {
   res.json(db.users);
 });
 
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Get user by ID
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.get('/api/users/:id', async (req, res) => {
   if (isMongoConnected) {
     try {
@@ -544,6 +671,61 @@ app.get('/api/users/:id', async (req, res) => {
   res.json(user);
 });
 
+/**
+ * @swagger
+ * /api/users:
+ *   post:
+ *     summary: Create a new user (employee)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *               - name
+ *               - email
+ *               - phone
+ *               - role
+ *               - designation
+ *               - department
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: Profile picture (mandatory)
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phone:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [admin, employee]
+ *               designation:
+ *                 type: string
+ *               department:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.post('/api/users', upload.single('avatar'), async (req, res) => {
   const result = UserSchema.safeParse(req.body);
   if (!result.success) {
@@ -610,6 +792,61 @@ app.post('/api/users', upload.single('avatar'), async (req, res) => {
   res.status(201).json(newEmployee);
 });
 
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Update user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phone:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [admin, employee]
+ *               status:
+ *                 type: string
+ *                 enum: [active, inactive]
+ *               designation:
+ *                 type: string
+ *               department:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
   const { id } = req.params;
   const result = UserSchema.partial().safeParse(req.body);
@@ -686,6 +923,46 @@ app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
   res.json(db.users[index]);
 });
 
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Delete user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Cannot delete admin user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.delete('/api/users/:id', async (req, res) => {
   const { id } = req.params;
   if (isMongoConnected) {
@@ -721,6 +998,23 @@ app.delete('/api/users/:id', async (req, res) => {
 });
 
 // Settings Endpoints
+
+/**
+ * @swagger
+ * /api/settings:
+ *   get:
+ *     summary: Get organization settings
+ *     tags: [Settings]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Settings retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OrganizationSettings'
+ */
 app.get('/api/settings', async (req, res) => {
   if (isMongoConnected) {
     try {
@@ -736,6 +1030,28 @@ app.get('/api/settings', async (req, res) => {
   res.json(db.settings);
 });
 
+/**
+ * @swagger
+ * /api/settings:
+ *   post:
+ *     summary: Update organization settings
+ *     tags: [Settings]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/OrganizationSettings'
+ *     responses:
+ *       200:
+ *         description: Settings updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OrganizationSettings'
+ */
 app.post('/api/settings', async (req, res) => {
   const result = SettingsSchema.safeParse(req.body);
   if (!result.success) {
@@ -767,6 +1083,25 @@ app.post('/api/settings', async (req, res) => {
 });
 
 // Attendance Endpoints
+
+/**
+ * @swagger
+ * /api/attendance:
+ *   get:
+ *     summary: Get all attendance records
+ *     tags: [Attendance]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Attendance records retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/AttendanceRecord'
+ */
 app.get('/api/attendance', async (req, res) => {
   if (isMongoConnected) {
     try {
@@ -781,6 +1116,31 @@ app.get('/api/attendance', async (req, res) => {
   res.json(sorted);
 });
 
+/**
+ * @swagger
+ * /api/attendance/my/{employeeId}:
+ *   get:
+ *     summary: Get attendance records for a specific employee
+ *     tags: [Attendance]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: employeeId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Employee ID
+ *     responses:
+ *       200:
+ *         description: Attendance records retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/AttendanceRecord'
+ */
 app.get('/api/attendance/my/:employeeId', async (req, res) => {
   const { employeeId } = req.params;
   if (isMongoConnected) {
@@ -798,6 +1158,44 @@ app.get('/api/attendance/my/:employeeId', async (req, res) => {
   res.json(records);
 });
 
+/**
+ * @swagger
+ * /api/attendance/my/{employeeId}/metrics:
+ *   get:
+ *     summary: Get attendance metrics for a specific employee
+ *     tags: [Attendance]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: employeeId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Employee ID
+ *     responses:
+ *       200:
+ *         description: Metrics retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 todayAttendance:
+ *                   $ref: '#/components/schemas/AttendanceRecord'
+ *                 totalPresent:
+ *                   type: number
+ *                 totalLate:
+ *                   type: number
+ *                 totalWorkingHours:
+ *                   type: number
+ *                 attendanceRate:
+ *                   type: number
+ *                 recentAttendance:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/AttendanceRecord'
+ */
 app.get('/api/attendance/my/:employeeId/metrics', async (req, res) => {
   const { employeeId } = req.params;
   const todayStr = dayjs().format('YYYY-MM-DD');
@@ -858,6 +1256,22 @@ app.get('/api/attendance/my/:employeeId/metrics', async (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /api/attendance/admin/metrics:
+ *   get:
+ *     summary: Get admin dashboard metrics
+ *     tags: [Attendance]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Admin metrics retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MetricsResponse'
+ */
 app.get('/api/attendance/admin/metrics', async (req, res) => {
   const todayStr = dayjs().format('YYYY-MM-DD');
   const today = dayjs();
@@ -964,6 +1378,61 @@ app.get('/api/attendance/admin/metrics', async (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /api/attendance/check-in:
+ *   post:
+ *     summary: Check-in with face verification
+ *     tags: [Attendance]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - employeeId
+ *               - employeeName
+ *               - selfies
+ *             properties:
+ *               employeeId:
+ *                 type: string
+ *               employeeName:
+ *                 type: string
+ *               latitude:
+ *                 type: string
+ *               longitude:
+ *                 type: string
+ *               accuracy:
+ *                 type: string
+ *               angle:
+ *                 type: string
+ *               selfies:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Selfie images (1 or more for burst)
+ *     responses:
+ *       201:
+ *         description: Check-in successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AttendanceRecord'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Employee not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.post('/api/attendance/check-in', upload.array('selfies'), async (req, res) => {
   const result = CheckInSchema.safeParse(req.body);
   if (!result.success) {
@@ -1214,6 +1683,32 @@ app.post('/api/attendance/check-in', upload.array('selfies'), async (req, res) =
   res.status(201).json(newRecord);
 });
 
+/**
+ * @swagger
+ * /api/attendance/check-out:
+ *   post:
+ *     summary: Check-out
+ *     tags: [Attendance]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CheckOutRequest'
+ *     responses:
+ *       200:
+ *         description: Check-out successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AttendanceRecord'
+ *       400:
+ *         description: No check-in found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.post('/api/attendance/check-out', async (req, res) => {
   const result = CheckOutSchema.safeParse(req.body);
   if (!result.success) {

@@ -11,6 +11,7 @@ import { z } from 'zod';
 import swaggerUi from 'swagger-ui-express';
 
 // Config
+import { env } from './config/environment';
 import { swaggerSpec } from './config/swagger';
 
 // Types
@@ -19,10 +20,10 @@ import { User, AttendanceRecord, OrganizationSettings, DB } from './shared/types
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
+const PORT = env.PORT;
 
 // Middleware
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }));
+app.use(cors({ origin: env.CLIENT_ORIGIN }));
 app.use(express.json());
 
 // Ensure directories exist
@@ -245,7 +246,7 @@ const generateHistoricalAttendance = (users: User[]): AttendanceRecord[] => {
 // ==========================================
 import mongoose, { Schema } from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = env.MONGODB_URI;
 let isMongoConnected = false;
 let mongoConnectionError: string | null = null;
 
@@ -1492,7 +1493,7 @@ app.post('/api/attendance/check-in', upload.array('selfies'), async (req, res) =
     }
   }
 
-  const externalPipelineUrl = process.env.FACE_RECOGNITION_API_URL;
+  const externalPipelineUrl = env.FACE_RECOGNITION_API_URL;
   if (!isSimulated && externalPipelineUrl && externalPipelineUrl.trim() !== '' && externalPipelineUrl !== 'undefined') {
     console.log(`[Face Recognition Service] Routing match request to external connection pipeline API: ${externalPipelineUrl}`);
     try {

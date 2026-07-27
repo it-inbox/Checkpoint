@@ -8,7 +8,7 @@ import { isMongoConnected, MongoUser, getDb, saveDb } from '../../config/databas
 import { upload } from '../../shared/utils/mutler';
 
 // Types
-import { User } from '../../shared/types/index';
+import User from "../../shared/types/User";
 
 // Zod Schemas
 const UserSchema = z.object({

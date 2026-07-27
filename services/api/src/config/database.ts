@@ -3,7 +3,12 @@ import path from 'path';
 import fs from 'fs';
 import dayjs from 'dayjs';
 import { env } from './environment';
-import { User, AttendanceRecord, OrganizationSettings, DB } from '../shared/types/index';
+
+// Types
+import User                 from '../shared/types/User';
+import AttendanceRecord     from '../shared/types/AttendanceRecord';
+import OrganizationSettings from '../shared/types/OrganizationSettings';
+import DB                   from '../shared/types/DB';
 
 // Database File Path
 const DB_PATH = path.join(process.cwd(), 'db.json');

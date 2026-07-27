@@ -1,8 +1,6 @@
 // ./src/index.ts
 
 import express from 'express';
-import path from 'path';
-import fs from 'fs';
 import multer from 'multer';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
@@ -11,9 +9,10 @@ import swaggerUi from 'swagger-ui-express';
 import { env } from './config/environment';
 import { swaggerSpec } from './config/swagger';
 import { connectDatabase } from './config/database';
+import { ensureUploadDir, UPLOADS_DIR } from './shared/utils/mutler';
 
 // Routes
-import { setupRoutes } from './routes/index'
+import { router } from './routes/index'
 
 const app = express();
 const PORT = env.PORT;
@@ -22,28 +21,9 @@ const PORT = env.PORT;
 app.use(cors({ origin: env.CLIENT_ORIGIN }));
 app.use(express.json());
 
-// Ensure directories exist
-const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-}
-
-// Serve uploaded selfies statically
-app.use('/uploads', express.static(UPLOADS_DIR));
-
-// Setup multer for uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, UPLOADS_DIR);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname) || '.jpg';
-    const prefix = file.fieldname === 'avatar' ? 'avatar' : 'selfie';
-    cb(null, prefix + '-' + uniqueSuffix + ext);
-  },
-});
-const upload = multer({ storage });
+// Mutler
+ensureUploadDir() // Ensure directories exist
+app.use('/uploads', express.static(UPLOADS_DIR)); // Serve uploaded selfies statically
 
 // Initialize database connection
 connectDatabase();
@@ -58,7 +38,7 @@ app.get('/api-docs.json', (req, res) => {
 });
 
 // Setup all API routes
-setupRoutes(app, upload);
+app.use("/api", router);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

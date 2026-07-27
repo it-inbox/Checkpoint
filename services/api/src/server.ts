@@ -1,3 +1,5 @@
+// ./src/index.ts
+
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -7,7 +9,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './swagger';
+
+// Config
+import { swaggerSpec } from './config/swagger';
+
+// Types
+import { User, AttendanceRecord, OrganizationSettings, DB } from './shared/types/index';
 
 dotenv.config();
 
@@ -43,50 +50,6 @@ const upload = multer({ storage });
 
 // Database File Path
 const DB_PATH = path.join(process.cwd(), 'db.json');
-
-// Types (mirrored from src/types/index.ts)
-interface User {
-  id: string;
-  employeeId: string;
-  name: string;
-  email: string;
-  phone: string;
-  role: 'admin' | 'employee';
-  status: 'active' | 'inactive';
-  designation: string;
-  department: string;
-  joinedDate: string;
-  avatarUrl?: string;
-}
-
-interface AttendanceRecord {
-  id: string;
-  employeeId: string;
-  employeeName: string;
-  date: string;
-  checkIn: string | null;
-  checkOut: string | null;
-  status: 'present' | 'absent' | 'late' | 'half_day' | 'auto_closed';
-  workingHours: number;
-  notes?: string;
-  selfieUrl?: string;
-}
-
-interface OrganizationSettings {
-  companyName: string;
-  officeName: string;
-  latitude: number;
-  longitude: number;
-  radius: number;
-  officeStartTime: string;
-  officeEndTime: string;
-}
-
-interface DB {
-  users: User[];
-  settings: OrganizationSettings;
-  attendance: AttendanceRecord[];
-}
 
 // Zod Schemas
 const UserSchema = z.object({

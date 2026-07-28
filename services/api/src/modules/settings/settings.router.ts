@@ -16,7 +16,7 @@ const SettingsSchema = z.object({
   officeEndTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format (HH:mm)'),
 });
 
-const settingsRouter  = express.Router();
+const router  = express.Router();
 
 /**
  * @swagger
@@ -34,7 +34,7 @@ const settingsRouter  = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/OrganizationSettings'
  */
-settingsRouter.get('/api/settings', async (req, res) => {
+router.get('/api/settings', async (req, res) => {
   if (isMongoConnected) {
     try {
       const settings = await MongoSettings.findOne({});
@@ -71,7 +71,7 @@ settingsRouter.get('/api/settings', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/OrganizationSettings'
  */
-settingsRouter.post('/api/settings', async (req, res) => {
+router.post('/api/settings', async (req, res) => {
   const result = SettingsSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({ error: result.error.issues[0].message });
@@ -101,4 +101,4 @@ settingsRouter.post('/api/settings', async (req, res) => {
   res.json(db.settings);
 });
 
-export { settingsRouter }
+export { router as settingsRouter };

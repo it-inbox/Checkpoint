@@ -21,7 +21,7 @@ const UserSchema = z.object({
   department: z.string().min(1, 'Department is required'),
 });
 
-const userRouter  = express.Router();
+const router  = express.Router();
 
 /**
  * @swagger
@@ -41,7 +41,7 @@ const userRouter  = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-userRouter.get('/api/users', async (req, res) => {
+router.get('/api/users', async (req, res) => {
   if (isMongoConnected) {
     try {
       const users = await MongoUser.find({});
@@ -83,7 +83,7 @@ userRouter.get('/api/users', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-userRouter.get('/api/users/:id', async (req, res) => {
+router.get('/api/users/:id', async (req, res) => {
   if (isMongoConnected) {
     try {
       const user = await MongoUser.findOne({ id: req.params.id });
@@ -157,7 +157,7 @@ userRouter.get('/api/users/:id', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-userRouter.post('/api/users', upload.single('avatar'), async (req, res) => {
+router.post('/api/users', upload.single('avatar'), async (req, res) => {
   const result = UserSchema.safeParse(req.body);
   if (!result.success) {
     if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
@@ -278,7 +278,7 @@ userRouter.post('/api/users', upload.single('avatar'), async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-userRouter.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
+router.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
   const { id } = req.params;
   const result = UserSchema.partial().safeParse(req.body);
   if (!result.success) {
@@ -394,7 +394,7 @@ userRouter.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-userRouter.delete('/api/users/:id', async (req, res) => {
+router.delete('/api/users/:id', async (req, res) => {
   const { id } = req.params;
   if (isMongoConnected) {
     try {
@@ -428,4 +428,4 @@ userRouter.delete('/api/users/:id', async (req, res) => {
   res.json({ success: true, message: 'Employee deleted successfully.' });
 });
 
-export { userRouter }
+export { router as userRouter };

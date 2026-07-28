@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 // Config
 import { isMongoConnected, MONGODB_URI, mongoConnectionError } from '../../config/database';
 
-const dbStatusRouter  = express.Router();
+const router  = express.Router();
 
 /**
  * @swagger
@@ -35,7 +35,7 @@ const dbStatusRouter  = express.Router();
  *                   type: string
  *                   nullable: true
  */
-dbStatusRouter.get('/api/db-status', (req, res) => {
+router.get('/api/db-status', (req, res) => {
   const uriMasked = MONGODB_URI
     ? MONGODB_URI.replace(/:([^@:]+)@/, ':******@')
     : null;
@@ -49,4 +49,4 @@ dbStatusRouter.get('/api/db-status', (req, res) => {
   });
 });
 
-export { dbStatusRouter }
+export { router as dbStatusRouter };

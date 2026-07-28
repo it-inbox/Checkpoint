@@ -10,7 +10,7 @@ const LoginSchema = z.object({
   email: z.string().email('Invalid email format'),
 });
 
-const authRouter  = express.Router();
+const router  = express.Router();
 
 /**
  * @swagger
@@ -50,7 +50,7 @@ const authRouter  = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-authRouter.post('/api/auth/login', async (req, res) => {
+router.post('/api/auth/login', async (req, res) => {
   const result = LoginSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({ error: result.error.issues[0].message });
@@ -87,4 +87,4 @@ authRouter.post('/api/auth/login', async (req, res) => {
   });
 });
 
-export { authRouter }
+export { router as authRouter };

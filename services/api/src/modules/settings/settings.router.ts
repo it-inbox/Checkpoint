@@ -34,7 +34,7 @@ const router  = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/OrganizationSettings'
  */
-router.get('/api/settings', async (req, res) => {
+router.get('/', async (req, res) => {
   if (isMongoConnected) {
     try {
       const settings = await MongoSettings.findOne({});
@@ -71,7 +71,7 @@ router.get('/api/settings', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/OrganizationSettings'
  */
-router.post('/api/settings', async (req, res) => {
+router.post('/', async (req, res) => {
   const result = SettingsSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({ error: result.error.issues[0].message });

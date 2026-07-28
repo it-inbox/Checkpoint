@@ -32,7 +32,7 @@ import {
  *               items:
  *                 $ref: '#/components/schemas/AttendanceRecord'
  */
-router.get('/api/attendance', getAttendance);
+router.get('/', getAttendance);
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ router.get('/api/attendance', getAttendance);
  *               items:
  *                 $ref: '#/components/schemas/AttendanceRecord'
  */
-router.get('/api/attendance/my/:employeeId', getUserAttendance);
+router.get('/my/:employeeId', getUserAttendance);
 
 /**
  * @swagger
@@ -99,7 +99,7 @@ router.get('/api/attendance/my/:employeeId', getUserAttendance);
  *                   items:
  *                     $ref: '#/components/schemas/AttendanceRecord'
  */
-router.get('/api/attendance/my/:employeeId/metrics', getEmployeeMetrics);
+router.get('/my/:employeeId/metrics', getEmployeeMetrics);
 
 /**
  * @swagger
@@ -117,7 +117,7 @@ router.get('/api/attendance/my/:employeeId/metrics', getEmployeeMetrics);
  *             schema:
  *               $ref: '#/components/schemas/MetricsResponse'
  */
-router.get('/api/attendance/admin/metrics', getAdminMetrics);
+router.get('/admin/metrics', getAdminMetrics);
 
 /**
  * @swagger
@@ -174,7 +174,7 @@ router.get('/api/attendance/admin/metrics', getAdminMetrics);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/api/attendance/check-in', upload.array('selfies'), checkIn);
+router.post('/check-in', upload.array('selfies'), checkIn);
 
 /**
  * @swagger
@@ -202,6 +202,6 @@ router.post('/api/attendance/check-in', upload.array('selfies'), checkIn);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/api/attendance/check-out', checkOut);
+router.post('/check-out', checkOut);
 
 export { router as attendanceRouter };

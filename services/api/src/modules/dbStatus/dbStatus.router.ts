@@ -35,7 +35,7 @@ const router  = express.Router();
  *                   type: string
  *                   nullable: true
  */
-router.get('/api/db-status', (req, res) => {
+router.get('/', (req, res) => {
   const uriMasked = MONGODB_URI
     ? MONGODB_URI.replace(/:([^@:]+)@/, ':******@')
     : null;

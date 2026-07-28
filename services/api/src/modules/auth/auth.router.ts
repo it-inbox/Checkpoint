@@ -50,7 +50,7 @@ const router  = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/api/auth/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   const result = LoginSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({ error: result.error.issues[0].message });

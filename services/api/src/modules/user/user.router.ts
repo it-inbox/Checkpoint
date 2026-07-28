@@ -41,7 +41,7 @@ const router  = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/api/users', async (req, res) => {
+router.get('/', async (req, res) => {
   if (isMongoConnected) {
     try {
       const users = await MongoUser.find({});
@@ -83,7 +83,7 @@ router.get('/api/users', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/api/users/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   if (isMongoConnected) {
     try {
       const user = await MongoUser.findOne({ id: req.params.id });

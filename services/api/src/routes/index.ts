@@ -10,7 +10,7 @@ import { attendanceRouter } from '../modules/attendance/attendance.router'
 
 router.use('/db-status',  dbStatusRouter)
 router.use('/auth',       authRouter)
-router.use('/user',       userRouter)
+router.use('/users',       userRouter)
 router.use('/settings',   settingsRouter)
 router.use('/attendance', attendanceRouter)
 

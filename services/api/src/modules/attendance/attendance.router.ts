@@ -1,5 +1,4 @@
-import express from "express";
-const router  = express.Router();
+import express    from "express";
 
 // Middlewares
 import { upload } from '../../shared/middlewares/upload';
@@ -13,6 +12,8 @@ import {
   checkIn,
   checkOut,
 } from "./attendance.controller";
+
+const router  = express.Router();
 
 /**
  * @swagger

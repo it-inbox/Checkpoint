@@ -1,17 +1,12 @@
 import express from "express";
-const router  = express.Router();
 
 // Middleware
 import { upload } from '../../shared/middlewares/upload';
 
 // Controller
-import {
-  getAllUsers,
-  getUser,
-  createEmployee,
-  updateEmployee,
-  deleteEmployee
-} from "./user.controller";
+import { getAllUsers, getUser, createEmployee, updateEmployee, deleteEmployee } from "./user.controller";
+
+const router  = express.Router();
 
 /**
  * @swagger

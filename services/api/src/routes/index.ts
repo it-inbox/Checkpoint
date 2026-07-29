@@ -1,17 +1,18 @@
-// Libraries
 import express from 'express';
-const router  = express.Router();
 
-import { dbStatusRouter   } from '../modules/dbStatus/dbStatus.router';
-import { authRouter       } from '../modules/auth/auth.router'
-import { userRouter       } from '../modules/user/user.router'
-import { settingsRouter   } from '../modules/settings/settings.router'
-import { attendanceRouter } from '../modules/attendance/attendance.router'
+// Routes
+import { attendanceRouter } from '../modules/attendance/attendance.router';
+import { authRouter       } from '../modules/auth/auth.router';
+import { systemRouter     } from '../modules/system/system.router';
+import { settingsRouter   } from '../modules/settings/settings.router';
+import { userRouter       } from '../modules/user/user.router';
 
-router.use('/db-status',  dbStatusRouter)
-router.use('/auth',       authRouter)
-router.use('/users',       userRouter)
-router.use('/settings',   settingsRouter)
+const router = express.Router();
+
 router.use('/attendance', attendanceRouter)
+router.use('/auth',       authRouter)
+router.use('/settings',   settingsRouter)
+router.use('/system',     systemRouter)
+router.use('/users',      userRouter)
 
 export { router }

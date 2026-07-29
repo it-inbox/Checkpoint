@@ -1,8 +1,9 @@
 import express from "express";
-const router  = express.Router();
 
 // Controller
-import { login } from './auth.controller'
+import { login } from "./auth.controller";
+
+const router  = express.Router();
 
 /**
  * @swagger

@@ -1,4 +1,4 @@
-export default interface AttendanceRecord {
+export interface AttendanceRecord {
   id: string;
   employeeId: string;
   employeeName: string;

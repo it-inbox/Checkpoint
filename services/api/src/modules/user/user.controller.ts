@@ -1,4 +1,3 @@
-// Libraries
 import { Request, Response } from "express";
 import fs from 'fs';
 
@@ -9,7 +8,7 @@ import { isMongoConnected, MongoUser, getDb, saveDb } from '../../config/databas
 import { UserSchema } from "./user.validator";
 
 // Types
-import User from "../../shared/types/User";
+import { User } from "../../shared/types/User";
 
 export async function getAllUsers(req: Request, res: Response) {
   if (isMongoConnected) {

@@ -1,4 +1,4 @@
-export default interface OrganizationSettings {
+export interface OrganizationSettings {
   companyName: string;
   officeName: string;
   latitude: number;

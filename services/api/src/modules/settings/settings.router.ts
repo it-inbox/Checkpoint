@@ -1,8 +1,9 @@
 import express from "express";
-const router  = express.Router();
 
 // Controller
 import { getSettings, updateSettings } from "./settings.controller";
+
+const router  = express.Router();
 
 /**
  * @swagger

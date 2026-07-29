@@ -1,4 +1,3 @@
-// Libraries
 import { Request, Response } from "express";
 import dayjs from "dayjs";
 import fs from 'fs';
@@ -6,18 +5,10 @@ import path from 'path';
 
 // Config
 import { env } from '../../config/environment';
-import {
-  isMongoConnected,
-  INITIAL_SETTINGS,
-  MongoUser,
-  MongoSettings,
-  MongoAttendance,
-  getDb,
-  saveDb
-} from '../../config/database';
+import { isMongoConnected, INITIAL_SETTINGS, MongoUser, MongoSettings, MongoAttendance, getDb, saveDb } from '../../config/database';
 
 // Zod Schemas
-import { CheckInSchema, CheckOutSchema } from './attendance.validator';
+import { CheckInSchema,   CheckOutSchema } from './attendance.validator';
 
 export async function getAttendance(req: Request, res: Response) {
   if (isMongoConnected) {

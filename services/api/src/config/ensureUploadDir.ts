@@ -1,7 +1,7 @@
 import fs from "fs";
-import path from 'path';
 
-export const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
+// Utils
+import { UPLOADS_DIR } from "../shared/utils/uploadDir";
 
 export function ensureUploadDir() {
   if (!fs.existsSync(UPLOADS_DIR)) {

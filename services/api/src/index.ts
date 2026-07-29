@@ -1,14 +1,18 @@
-// ./src/index.ts
 import express from 'express';
-import multer from 'multer';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 
 // Config
-import { env } from './config/environment';
-import { swaggerSpec } from './config/swagger';
+import { env }             from './config/environment';
+import { swaggerSpec }     from './config/swagger';
 import { connectDatabase } from './config/database';
-import { ensureUploadDir, UPLOADS_DIR } from './shared/utils/mutler';
+
+// Utils
+import { ensureUploadDir, UPLOADS_DIR } from './shared/utils/ensureUploadDir';
+
+// Middleware
+import { apiDocsJson }  from './shared/middlewares/swagger';
+import { errorHandler } from './shared/middlewares/errorHandler';
 
 // Routes
 import { router } from './routes/index'
@@ -27,27 +31,14 @@ app.use('/uploads', express.static(UPLOADS_DIR)); // Serve uploaded selfies stat
 // Initialize database connection
 connectDatabase();
 
-// Serve Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Serve the OpenAPI spec as JSON
-app.get('/api-docs.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // Serve Swagger UI
+app.get('/api-docs.json', apiDocsJson);                              // Serve the OpenAPI spec as JSON
 
 // Setup all API routes
 app.use("/api", router);
 
 // Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (err instanceof multer.MulterError) {
-    console.error(`[Multer Error] Path: ${req.path}, Field: ${err.field}, Message: ${err.message}`);
-    return res.status(400).json({ error: `Upload error: Unexpected field "${err.field}"` });
-  }
-  console.error('[Unhandled Error]', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
+app.use(errorHandler);
 
 // Health check
 app.get('/', (req, res) => res.json({message: "API is running..."}))

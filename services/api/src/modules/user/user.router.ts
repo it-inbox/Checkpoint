@@ -2,7 +2,7 @@ import express from "express";
 const router  = express.Router();
 
 // Middleware
-import { upload } from '../../shared/utils/mutler';
+import { upload } from '../../shared/middlewares/upload';
 
 // Controller
 import {

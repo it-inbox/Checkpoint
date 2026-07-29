@@ -1,11 +1,9 @@
 // Libraries
 import express from 'express';
-import mongoose from 'mongoose';
-
-// Config
-import { isMongoConnected, MONGODB_URI, mongoConnectionError } from '../../config/database';
-
 const router  = express.Router();
+
+// Controller
+import { getDbStatus } from './dbStatus.controller';
 
 /**
  * @swagger
@@ -35,18 +33,6 @@ const router  = express.Router();
  *                   type: string
  *                   nullable: true
  */
-router.get('/', (req, res) => {
-  const uriMasked = MONGODB_URI
-    ? MONGODB_URI.replace(/:([^@:]+)@/, ':******@')
-    : null;
-
-  res.json({
-    isMongoConnected,
-    connectionError: mongoConnectionError,
-    databaseName: mongoose.connection ? mongoose.connection.name : null,
-    uriConfigured: !!MONGODB_URI,
-    uriMasked,
-  });
-});
+router.get('/', getDbStatus);
 
 export { router as dbStatusRouter };

@@ -1,44 +1,15 @@
 import { Request, Response } from "express";
 
-// Config
-import { isMongoConnected, MongoUser, getDb } from '../../config/database';
+import { loginService } from "./auth.service";
 
-// Zod Schemas
-import { LoginSchema } from './auth.validator'
-
-export async function login(req: Request, res: Response) {
-  const result = LoginSchema.safeParse(req.body);
-  if (!result.success) {
-    return res.status(400).json({ error: result.error.issues[0].message });
+export async function loginController(req: Request, res: Response) {
+  try {
+    const result = await loginService(req.body)
+    return res.json(result)
   }
-  const { email } = result.data;
-
-  const normalizedEmail = email.trim().toLowerCase();
-  let user: any = null;
-
-  if (isMongoConnected) {
-    try {
-      user = await MongoUser.findOne({ email: new RegExp(`^${normalizedEmail}$`, 'i') });
-    } catch (err) {
-      console.error('Mongo login error:', err);
-    }
+  catch (err: any) {
+    if (err.status) return res.status(err.status).json({ error: err.message })
+    console.error('Login controller error:', err);
+    return res.status(500).json({ error: 'Internal server error' })
   }
-
-  if (!isMongoConnected || !user) {
-    const db = getDb();
-    user = db.users.find(u => u.email.toLowerCase() === normalizedEmail);
-  }
-
-  if (!user) {
-    return res.status(401).json({ error: 'Invalid email or password. Recommended: sarah.connor@checkpoint.io (Admin) or john.miller@checkpoint.io (Employee)' });
-  }
-
-  if (user.status === 'inactive') {
-    return res.status(403).json({ error: 'This user account is currently deactivated.' });
-  }
-
-  res.json({
-    user,
-    token: `mock-jwt-token-for-${user.id}`,
-  });
 }

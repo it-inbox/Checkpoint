@@ -5,12 +5,12 @@ import { upload } from '../../shared/middlewares/upload';
 
 // Controller
 import {
-  getAttendance,
-  getUserAttendance,
-  getEmployeeMetrics,
-  getAdminMetrics,
-  checkIn,
-  checkOut,
+  ctrlGetAttendance,
+  ctrlGetUserAttendance,
+  ctrlGetEmployeeMetrics,
+  ctrlGetAdminMetrics,
+  ctrlCheckIn,
+  ctrlCheckOut,
 } from "./attendance.controller";
 
 const router  = express.Router();
@@ -33,7 +33,7 @@ const router  = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/AttendanceRecord'
  */
-router.get('/', getAttendance);
+router.get('/', ctrlGetAttendance);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ router.get('/', getAttendance);
  *               items:
  *                 $ref: '#/components/schemas/AttendanceRecord'
  */
-router.get('/my/:employeeId', getUserAttendance);
+router.get('/my/:employeeId', ctrlGetUserAttendance);
 
 /**
  * @swagger
@@ -100,7 +100,7 @@ router.get('/my/:employeeId', getUserAttendance);
  *                   items:
  *                     $ref: '#/components/schemas/AttendanceRecord'
  */
-router.get('/my/:employeeId/metrics', getEmployeeMetrics);
+router.get('/my/:employeeId/metrics', ctrlGetEmployeeMetrics);
 
 /**
  * @swagger
@@ -118,7 +118,7 @@ router.get('/my/:employeeId/metrics', getEmployeeMetrics);
  *             schema:
  *               $ref: '#/components/schemas/MetricsResponse'
  */
-router.get('/admin/metrics', getAdminMetrics);
+router.get('/admin/metrics', ctrlGetAdminMetrics);
 
 /**
  * @swagger
@@ -175,7 +175,7 @@ router.get('/admin/metrics', getAdminMetrics);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/check-in', upload.array('selfies'), checkIn);
+router.post('/check-in', upload.array('selfies'), ctrlCheckIn);
 
 /**
  * @swagger
@@ -203,6 +203,6 @@ router.post('/check-in', upload.array('selfies'), checkIn);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/check-out', checkOut);
+router.post('/check-out', ctrlCheckOut);
 
 export { router as attendanceRouter };

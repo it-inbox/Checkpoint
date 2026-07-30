@@ -1,35 +1,25 @@
 // Config
 import { isMongoConnected, MongoUser, getDb } from '../../config/database';
 
-// Zod Schemas
-import { LoginSchema } from './auth.validator'
-
 // Types
 import { LoginInput, LoginResponse } from './auth.types';
-import { Error } from '../../shared/types/Error';
+import { ServiceError } from '../../shared/types/ServiceError';
 
-export async function loginService(reqBody: LoginInput): Promise<LoginResponse> {
-  
-  const result = LoginSchema.safeParse(reqBody);
-  if (!result.success) {
-    const err: Error = new Error(result.error.issues[0].message);
-    err.status = 400;
-    throw err;
-  }
+export async function svcLogin(data: LoginInput): Promise<LoginResponse> {
 
-  const { email } = result.data;
+  const { email } = data;
   const normalizedEmail = email.trim().toLowerCase();
 
   const user = await findUserByEmail(normalizedEmail);
 
   if (!user) {
-    const err: Error = new Error('Invalid email or password.');
+    const err: ServiceError = new Error('Invalid email or password.');
     err.status = 401;
     throw err;
   }
 
   if (user.status === 'inactive') {
-    const err: Error = new Error('This user account is currently deactivated.');
+    const err: ServiceError = new Error('This user account is currently deactivated.');
     err.status = 403;
     throw err;
   }

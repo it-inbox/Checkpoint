@@ -1,7 +1,7 @@
 import express from "express";
 
 // Controller
-import { getSettings, updateSettings } from "./settings.controller";
+import { ctrlGetSettings, ctrlUpdateSettings } from "./settings.controller";
 
 const router  = express.Router();
 
@@ -21,7 +21,7 @@ const router  = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/OrganizationSettings'
  */
-router.get('/', getSettings);
+router.get('/', ctrlGetSettings);
 
 /**
  * @swagger
@@ -45,6 +45,6 @@ router.get('/', getSettings);
  *             schema:
  *               $ref: '#/components/schemas/OrganizationSettings'
  */
-router.post('/', updateSettings);
+router.post('/', ctrlUpdateSettings);
 
 export { router as settingsRouter };

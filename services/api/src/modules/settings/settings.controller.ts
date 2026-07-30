@@ -1,52 +1,39 @@
 import { Request, Response } from "express";
 
-// Config
-import { isMongoConnected, MongoSettings, getDb, saveDb } from "../../config/database"
-
 // Zod Schemas
 import { SettingsSchema } from "./settings.validator";
 
-export async function getSettings(req: Request, res: Response) {
-  if (isMongoConnected) {
-    try {
-      const settings = await MongoSettings.findOne({});
-      if (settings) {
-        return res.json(settings);
-      }
-    } catch (err) {
-      console.error('Mongo get settings error:', err);
-    }
+// Services
+import { svcGetSettings, svcUpdateSettings } from "./settings.service";
+
+export async function ctrlGetSettings(req: Request, res: Response) {
+  try {
+    const response = await svcGetSettings()
+    return res.json(response)
   }
-  const db = getDb();
-  res.json(db.settings);
+  catch (err: any) {
+    if (err.status) {
+      return res.status(err.status).json({ error: err.message })
+    }
+    console.error('Settings controller error', err);
+    return res.status(500).json({ error: 'Internal server error' })
+  }
 }
 
-export async function updateSettings(req: Request, res: Response) {
-  const result = SettingsSchema.safeParse(req.body);
-  if (!result.success) {
-    return res.status(400).json({ error: result.error.issues[0].message });
-  }
-  const settingsData = result.data;
+export async function ctrlUpdateSettings(req: Request, res: Response) {
 
-  if (isMongoConnected) {
-    try {
-      let settings = await MongoSettings.findOne({});
-      if (!settings) {
-        settings = new MongoSettings(settingsData);
-      } else {
-        Object.assign(settings, settingsData);
-      }
-      await settings.save();
-      return res.json(settings);
-    } catch (err) {
-      console.error('Mongo save settings error:', err);
-    }
+  const validReq = SettingsSchema.safeParse(req.body);
+  if (!validReq.success) {
+    return res.status(400).json({ error: validReq.error.issues[0].message });
   }
-  const db = getDb();
-  db.settings = {
-    ...db.settings,
-    ...settingsData,
-  };
-  saveDb(db);
-  res.json(db.settings);
+
+  try {
+    const response = await svcUpdateSettings(validReq.data)
+    return res.json(response)
+  }
+  catch (err: any) {
+    if (err.status) return res.status(err.status).json({ error: err.message })
+    console.error('Settings controller error', err);
+    return res.status(500).json({ error: 'Internal server error' })
+  }
 }

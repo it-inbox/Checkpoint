@@ -1,7 +1,7 @@
 import express from "express";
 
 // Controller
-import { loginController } from "./auth.controller";
+import { ctrlLogin } from "./auth.controller";
 
 const router  = express.Router();
 
@@ -43,6 +43,6 @@ const router  = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/login', loginController);
+router.post('/login', ctrlLogin);
 
 export { router as authRouter };

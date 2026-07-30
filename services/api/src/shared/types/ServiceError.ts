@@ -1,4 +1,4 @@
-export interface Error {
+export interface ServiceError {
   message?: string;
   status?: number;
 }

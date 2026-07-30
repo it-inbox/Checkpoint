@@ -2,7 +2,7 @@
 import { isMongoConnected, MongoSettings, getDb, saveDb } from "../../config/database"
 
 // Types
-import { SettingsInput, SettingsResponse } from './settings.types';
+import { UpdateSettingsInput } from './settings.types';
 
 export async function svcGetSettings() {
   if (isMongoConnected) {
@@ -17,7 +17,7 @@ export async function svcGetSettings() {
   return db.settings;
 }
 
-export async function svcUpdateSettings(data: SettingsInput): Promise<SettingsResponse>  {
+export async function svcUpdateSettings(data: UpdateSettingsInput) {
   if (isMongoConnected) {
     try {
       let settings = await MongoSettings.findOne({});

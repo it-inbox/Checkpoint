@@ -4,7 +4,13 @@ import express from "express";
 import { upload } from '../../shared/middlewares/upload';
 
 // Controller
-import { getAllUsers, getUser, createEmployee, updateEmployee, deleteEmployee } from "./user.controller";
+import { 
+  ctrlGetAllUsers,
+  ctrlGetUser,
+  ctrlCreateEmployee,
+  ctrlUpdateEmployee,
+  ctrlDeleteEmployee
+} from "./user.controller";
 
 const router  = express.Router();
 
@@ -26,7 +32,7 @@ const router  = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', getAllUsers);
+router.get('/', ctrlGetAllUsers);
 
 /**
  * @swagger
@@ -57,7 +63,7 @@ router.get('/', getAllUsers);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/:id', getUser);
+router.get('/:id', ctrlGetUser);
 
 /**
  * @swagger
@@ -114,7 +120,7 @@ router.get('/:id', getUser);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', upload.single('avatar'), createEmployee);
+router.post('/', upload.single('avatar'), ctrlCreateEmployee);
 
 /**
  * @swagger
@@ -171,7 +177,7 @@ router.post('/', upload.single('avatar'), createEmployee);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', upload.single('avatar'), updateEmployee);
+router.put('/:id', upload.single('avatar'), ctrlUpdateEmployee);
 
 /**
  * @swagger
@@ -213,6 +219,6 @@ router.put('/:id', upload.single('avatar'), updateEmployee);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', deleteEmployee);
+router.delete('/:id', ctrlDeleteEmployee);
 
 export { router as userRouter };

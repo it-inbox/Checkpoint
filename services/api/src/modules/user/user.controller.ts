@@ -1,219 +1,93 @@
 import { Request, Response } from "express";
-import fs from 'fs';
 
-// Config
-import { isMongoConnected, MongoUser, getDb, saveDb } from '../../config/database';
+// Services
+import {
+  svcGetAllUsers,
+  svcGetUser,
+  svcCreateEmployee,
+  svcUpdateEmployee,
+  svcDeleteEmployee,
+} from "./user.service";
 
-// Zod Schemas
-import { UserSchema } from "./user.validator";
-
-// Types
-import { User } from "../../shared/types/User";
-
-export async function getAllUsers(req: Request, res: Response) {
-  if (isMongoConnected) {
-    try {
-      const users = await MongoUser.find({});
-      return res.json(users);
-    } catch (err) {
-      console.error('Mongo get users error:', err);
-    }
+export async function ctrlGetAllUsers(req: Request, res: Response) {
+  try {
+    const response = await svcGetAllUsers()
+    return res.json(response)
   }
-  const db = getDb();
-  res.json(db.users);
+  catch (err: any) {
+    if (err.status) {
+      return res.status(err.status).json({ error: err.message })
+    }
+    console.error('User controller error', err);
+    return res.status(500).json({ error: 'Internal server error' })
+  }
 }
 
-export async function getUser(req: Request, res: Response) {
-  if (isMongoConnected) {
-    try {
-      const user = await MongoUser.findOne({ id: req.params.id });
-      if (user) {
-        return res.json(user);
-      }
-    } catch (err) {
-      console.error('Mongo get user error:', err);
+export async function ctrlGetUser(req: Request, res: Response) {
+  try {
+    const response = await svcGetUser(req.params.id);
+    if (!response) {
+      return res.status(404).json({ error: 'Employee not found.' });
     }
+    return res.json(response)
   }
-  const db = getDb();
-  const user = db.users.find(u => u.id === req.params.id);
-  if (!user) {
-    return res.status(404).json({ error: 'Employee not found.' });
+  catch (err: any) {
+    if (err.status) {
+      return res.status(err.status).json({ error: err.message })
+    }
+    console.error('User controller error', err);
+    return res.status(500).json({ error: 'Internal server error' })
   }
-  res.json(user);
 }
 
-export async function createEmployee(req: Request, res: Response) {
-  const result = UserSchema.safeParse(req.body);
-  if (!result.success) {
-    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-    return res.status(400).json({ error: result.error.issues[0].message });
+export async function ctrlCreateEmployee(req: Request, res: Response) {
+  try {
+    const response = await svcCreateEmployee(req.body, req.file)
+    return res.status(201).json(response)
   }
-  const employeeData = result.data;
-  const file = req.file;
-
-  if (!file) {
-    return res.status(400).json({ error: 'Profile picture upload is mandatory for biometric face registration.' });
-  }
-
-  const avatarUrl = `/uploads/${file.filename}`;
-
-  if (isMongoConnected) {
-    try {
-      const emailExists = await MongoUser.findOne({ email: new RegExp(`^${employeeData.email.trim()}$`, 'i') });
-      if (emailExists) {
-        if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
-        return res.status(400).json({ error: 'An employee with this email already exists.' });
-      }
-
-      const totalUsersCount = await MongoUser.countDocuments();
-      const newId = `u${Date.now()}`;
-      const newEmpId = `EMP-${String(totalUsersCount + 1).padStart(3, '0')}`;
-      const joinedDate = new Date().toISOString().split('T')[0];
-
-      const newEmployee = new MongoUser({
-        ...employeeData,
-        id: newId,
-        employeeId: newEmpId,
-        joinedDate,
-        avatarUrl,
-      });
-
-      await newEmployee.save();
-      return res.status(201).json(newEmployee);
-    } catch (err) {
-      console.error('Mongo create user error:', err);
+  catch (err: any) {
+    if (err.status) {
+      const statusCode =  err.message.includes('already exists') ? 400 : 
+                          err.message.includes('mandatory') ? 400 :
+                          500;
+      res.status(statusCode).json({ error: err.message });
     }
+    console.error('User controller error', err);
+    return res.status(500).json({ error: 'Internal server error' })
   }
-
-  const db = getDb();
-  if (db.users.some(u => u.email.toLowerCase() === employeeData.email.trim().toLowerCase())) {
-    if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
-    return res.status(400).json({ error: 'An employee with this email already exists.' });
-  }
-
-  const newId = `u${Date.now()}`;
-  const newEmpId = `EMP-${String(db.users.length + 1).padStart(3, '0')}`;
-  const joinedDate = new Date().toISOString().split('T')[0];
-
-  const newEmployee: User = {
-    ...employeeData,
-    id: newId,
-    employeeId: newEmpId,
-    joinedDate,
-    avatarUrl,
-  };
-
-  db.users.push(newEmployee);
-  saveDb(db);
-  res.status(201).json(newEmployee);
 }
 
-export async function updateEmployee(req: Request, res: Response) {
-  const { id } = req.params;
-  const result = UserSchema.partial().safeParse(req.body);
-  if (!result.success) {
-    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-    return res.status(400).json({ error: result.error.issues[0].message });
+export async function ctrlUpdateEmployee(req: Request, res: Response) {
+  try {
+    const response = await svcUpdateEmployee( req.params.id, req.body, req.file  )
+    return res.json(response)
   }
-  const employeeData = result.data;
-  const file = req.file;
-
-  if (isMongoConnected) {
-    try {
-      const user = await MongoUser.findOne({ id });
-      if (!user) {
-        if (file && fs.existsSync(file.path)) fs.unlinkSync(file.path);
-        return res.status(404).json({ error: 'Employee not found.' });
-      }
-
-      if (employeeData.email) {
-        const emailConflict = await MongoUser.findOne({ id: { $ne: id }, email: new RegExp(`^${employeeData.email.trim()}$`, 'i') });
-        if (emailConflict) {
-          if (file && fs.existsSync(file.path)) fs.unlinkSync(file.path);
-          return res.status(400).json({ error: 'An employee with this email already exists.' });
-        }
-      }
-
-      const updatedAvatarUrl = file ? `/uploads/${file.filename}` : user.avatarUrl;
-      if (!updatedAvatarUrl) {
-        if (file && fs.existsSync(file.path)) fs.unlinkSync(file.path);
-        return res.status(400).json({ error: 'Profile picture is mandatory.' });
-      }
-
-      const updatedUser = await MongoUser.findOneAndUpdate(
-        { id },
-        { ...employeeData, avatarUrl: updatedAvatarUrl },
-        { new: true }
-      );
-      return res.json(updatedUser);
-    } catch (err) {
-      console.error('Mongo update user error:', err);
+  catch (err: any) {
+    if (err.status) {
+      const statusCode =  err.message.includes('already exists') ? 400 :
+                          err.message.includes('not found') ? 404 :
+                          err.message.includes('mandatory') ? 400 :
+                          500;
+      res.status(statusCode).json({ error: err.message });
     }
+    console.error('User controller error', err);
+    return res.status(500).json({ error: 'Internal server error' })
   }
-
-  const db = getDb();
-  const index = db.users.findIndex(u => u.id === id);
-
-  if (index === -1) {
-    if (file && fs.existsSync(file.path)) fs.unlinkSync(file.path);
-    return res.status(404).json({ error: 'Employee not found.' });
-  }
-
-  if (employeeData.email) {
-    const emailConflict = db.users.some(u => u.id !== id && u.email.toLowerCase() === employeeData.email!.toLowerCase());
-    if (emailConflict) {
-      if (file && fs.existsSync(file.path)) fs.unlinkSync(file.path);
-      return res.status(400).json({ error: 'An employee with this email already exists.' });
-    }
-  }
-
-  const updatedAvatarUrl = file ? `/uploads/${file.filename}` : db.users[index].avatarUrl;
-
-  if (!updatedAvatarUrl) {
-    if (file && fs.existsSync(file.path)) fs.unlinkSync(file.path);
-    return res.status(400).json({ error: 'Profile picture is mandatory.' });
-  }
-
-  db.users[index] = {
-    ...db.users[index],
-    ...employeeData,
-    avatarUrl: updatedAvatarUrl,
-  };
-
-  saveDb(db);
-  res.json(db.users[index]);
 }
 
-export async function deleteEmployee(req: Request, res: Response) {
-  const { id } = req.params;
-  if (isMongoConnected) {
-    try {
-      const user = await MongoUser.findOne({ id });
-      if (!user) {
-        return res.status(404).json({ error: 'Employee not found.' });
-      }
-      if (user.role === 'admin') {
-        return res.status(400).json({ error: 'Cannot delete administrative user.' });
-      }
-      await MongoUser.deleteOne({ id });
-      return res.json({ success: true, message: 'Employee deleted successfully.' });
-    } catch (err) {
-      console.error('Mongo delete user error:', err);
+export async function ctrlDeleteEmployee(req: Request, res: Response) {
+  try {
+    const response = await svcDeleteEmployee(req.params.id)
+    return res.json(response)
+  }
+  catch (err: any) {
+    if (err.status) {
+      const statusCode =  err.message.includes('not found') ? 404 :
+                          err.message.includes('administrative') ? 400 :
+                          500;
+      res.status(statusCode).json({ error: err.message });
     }
+    console.error('User controller error', err);
+    return res.status(500).json({ error: 'Internal server error' })
   }
-
-  const db = getDb();
-  const index = db.users.findIndex(u => u.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ error: 'Employee not found.' });
-  }
-
-  if (db.users[index].role === 'admin') {
-    return res.status(400).json({ error: 'Cannot delete administrative user.' });
-  }
-
-  db.users.splice(index, 1);
-  saveDb(db);
-  res.json({ success: true, message: 'Employee deleted successfully.' });
 }

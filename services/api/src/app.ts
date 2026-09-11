@@ -24,7 +24,7 @@ export function createServer(): Express {
   ensureUploadDir(); // Ensure upload directory exist
   connectDatabase(); // Initialize database connection
 
-  app.use(cors({ origin: env.CLIENT_ORIGIN }));
+  app.use(cors({ origin: "*" }));
   app.use(express.json());
   app.use('/uploads', express.static(UPLOADS_DIR));                    // Mutler: Serve uploaded selfies statically
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // Serve Swagger UI

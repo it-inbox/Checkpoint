@@ -13,11 +13,7 @@ export default defineConfig(() => {
     },
     server: {
       hmr: process.env.DISABLE_HMR !== 'true',
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
-      proxy: {
-        '/api': 'http://localhost:3001',
-        '/uploads': 'http://localhost:3001',
-      },
+      watch: process.env.DISABLE_HMR === 'true' ? null : {}
     },
   };
 });

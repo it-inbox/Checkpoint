@@ -295,7 +295,7 @@ export const OrganizationSettingsPage: React.FC = () => {
                     How Geofencing Works
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
-                    CheckPoint evaluates mathematical coordinate proximity during Check-In. When an employee logs in, the platform calculates the exact geodesic distance between the browser's GPS coordinates and the specified <strong>Latitude/Longitude</strong> parameters.
+                    ClockInClockOut evaluates mathematical coordinate proximity during Check-In. When an employee logs in, the platform calculates the exact geodesic distance between the browser's GPS coordinates and the specified <strong>Latitude/Longitude</strong> parameters.
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
                     If the calculated distance exceeds the configured <strong>Radius threshold</strong>, the system permits the log but tags it as a <strong>"Remote Check-In"</strong> with an audit flag.

@@ -75,7 +75,7 @@ const INITIAL_USERS: User[] = [
 ];
 
 const INITIAL_SETTINGS: OrganizationSettings = {
-  companyName: 'CheckPoint Technologies Inc.',
+  companyName: 'ClockInClockOut Technologies Inc.',
   officeName: 'HQ Silicon Valley',
   latitude: 37.774929,
   longitude: -122.419416,

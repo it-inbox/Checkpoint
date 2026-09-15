@@ -100,7 +100,7 @@ export const DashboardLayout: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <FingerprintIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />
           <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.05em', color: theme.palette.text.primary }}>
-            Check<span style={{ color: theme.palette.primary.main }}>Point</span>
+            ClockIn<span style={{ color: theme.palette.primary.main }}>ClockOut</span>
           </Typography>
         </Box>
       </Toolbar>
@@ -228,7 +228,7 @@ export const DashboardLayout: React.FC = () => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" sx={{ fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
-              {menuItems.find((item) => location.pathname.startsWith(item.path))?.text || 'CheckPoint Portal'}
+              {menuItems.find((item) => location.pathname.startsWith(item.path))?.text || 'ClockInClockOut Portal'}
             </Typography>
           </Box>
 

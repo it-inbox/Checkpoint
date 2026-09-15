@@ -110,7 +110,7 @@ export const LoginPage: React.FC = () => {
               <FingerprintIcon sx={{ fontSize: 32 }} />
             </Paper>
             <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.05em' }}>
-              Check<span style={{ color: theme.palette.primary.main }}>Point</span>
+              ClockIn<span style={{ color: theme.palette.primary.main }}>ClockOut</span>
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
